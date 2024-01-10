@@ -5,6 +5,8 @@ WORKDIR /
 COPY "docker/texlive.profile" /texlive.profile
 
 # See also https://github.com/reitzig/texlive-docker
+#
+# The "esvect" package is in a huge collection-fontsextra collection which is not selected in texlive.profile
 RUN apt-get update && \
   apt-get install -qy --no-install-recommends  \
     wget ca-certificates perl \
@@ -21,7 +23,8 @@ RUN apt-get update && \
          && ./install-tl -profile /texlive.profile \
       ) \
   && rm -rf install-tl \
-  && tlmgr version | tail -n 1 > version \
+  && /usr/local/texlive/${tlversion}/bin/x86_64-linux/tlmgr install esvect \
+  && /usr/local/texlive/${tlversion}/bin/x86_64-linux/tlmgr version | tail -n 1 > version \
   && echo "Installed on $(date)" >> version \
   && apt-get remove -y wget ca-certificates perl  \
   && apt-get autoremove -y \
